@@ -48,9 +48,3 @@ class URLParser:
                     if word != '':
                         names.append(re.search(p2, word).group(0).strip())
         return names
-
-if __name__ == '__main__':
-    data = URLParser()
-    data.open()
-    #data.read()
-    print(data.names())
