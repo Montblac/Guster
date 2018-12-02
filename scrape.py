@@ -12,7 +12,7 @@ class URLParser:
     def open(self):
         """
         Opens the url
-        :return: url object
+        :return: URL Object
         """
         self.page = urllib.request.urlopen(self.url)
         return self.page
@@ -25,6 +25,10 @@ class URLParser:
         print(self.page.read().decode('utf-8'))
 
     def names(self):
+        """
+        Retrieves the nicknames from the page
+        :return: List of Names
+        """
         soup = BeautifulSoup(self.page, 'html.parser')
         div = soup.find("div", {"id": "mw-content-text"}).parent
         info = div.find_all('ul')
@@ -43,7 +47,6 @@ class URLParser:
                 for word in words:
                     if word != '':
                         names.append(re.search(p2, word).group(0))
-
         return names
 
 if __name__ == '__main__':
