@@ -46,11 +46,11 @@ class URLParser:
                 words = re.split(p1, words)
                 for word in words:
                     if word != '':
-                        names.append(re.search(p2, word).group(0))
+                        names.append(re.search(p2, word).group(0).strip())
         return names
 
 if __name__ == '__main__':
     data = URLParser()
     data.open()
     #data.read()
-    data.names()
+    print(data.names())
