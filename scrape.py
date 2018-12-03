@@ -1,16 +1,18 @@
 import urllib.request
 import re
+import random
 from bs4 import BeautifulSoup
 
 psych_url = 'https://psychusa.fandom.com/wiki/List_of_Gus%27_Nicknames'
 
 
-class URLParser:
+class NameGenerator:
     def __init__(self, url=psych_url):
         self.url = url
         self.page = None
+        self.names = None
 
-    def initialize(self):
+    def open(self):
         """
         Opens the url and stores the URL object
         :return: None
@@ -24,10 +26,10 @@ class URLParser:
         """
         print(self.page.read().decode('utf-8'))
 
-    def names(self):
+    def fetch(self):
         """
-        Retrieves the nicknames from the page
-        :return: list
+        Fetches names from the pages and stores them in a list
+        :return: None
         """
         soup = BeautifulSoup(self.page, 'html.parser')
         div = soup.find("div", {"id": "mw-content-text"}).parent
@@ -47,4 +49,19 @@ class URLParser:
                 for word in words:
                     if word != '':
                         names.append(re.search(p2, word).group(0).strip())
-        return names
+        self.names = names
+
+    def initialize(self):
+        """
+        Initializes the class object
+        :return: None
+        """
+        self.open()
+        self.fetch()
+
+    def get_name(self):
+        """
+        Returns a random name from the list
+        :return: str
+        """
+        return random.choice(self.names)
