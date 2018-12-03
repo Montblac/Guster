@@ -1,10 +1,7 @@
-import scrape
+import namegen
 
 if __name__ == '__main__':
-    parser = scrape.URLParser()
-    parser.initialize()
+    ng = namegen.NameGenerator()
+    ng.initialize()
 
-    names = parser.names()
-    for name in names:
-        print(name)
-    print(len(names))
+    print(ng.get_name())
