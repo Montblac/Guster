@@ -1,7 +1,11 @@
 import namegen
+import greetgen
 
 if __name__ == '__main__':
     ng = namegen.NameGenerator()
     ng.initialize()
 
-    print(ng.get_name())
+    gg = greetgen.GreetGenerator()
+    phrase = gg.get_greeting()
+
+    print(phrase.format(ng.get_name()))
