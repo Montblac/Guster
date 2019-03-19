@@ -1,11 +1,26 @@
 from tkinter import Tk, Button, Canvas, Label
 from PIL import ImageTk, Image
+import random
+import name
 
 
 class Window:
-    def __init__(self):
+    def __init__(self, names=None, images=None):
+        # List of nicknames and images
+        #self.names = names
+        self.names = ['Gus',
+                      'Bruton Gaster',
+                      'Ghee Buttersnaps',
+                      'Supersniffer']
+        #self.images = images
+        self.images = ['images/sm_img1.jpg',
+                       'images/sm_img2.jpg',
+                       'images/sm_img3.jpg',
+                       'images/sm_img4.jpeg',
+                       'images/sm_img5.jpg']
+
+        # Active nickname and image
         self.name = None
-        self.image = None
 
         self.root = Tk()
         self.root.title('Bruton Gaster')
@@ -22,18 +37,10 @@ class Window:
         # Create canvas
         self.canvas = Canvas(self.root, width=400, height=400)
         self.canvas.grid(row=0, padx=48, pady=10)
-
-        # TODO: Add image creation to a function
-        # im = ImageTk.PhotoImage(Image.open("images/sm_img1.jpg"))
-        im = Image.open('images/sm_img1.jpg')
-        im = im.resize((403, 403), Image.ANTIALIAS)
-        im = ImageTk.PhotoImage(im)
-        self.canvas.create_image(200, 200, image=im)
-        self.canvas.image = im
-        #canvas.create_rectangle(0, 0, 400, 400, fill='blue')
+        self.image = self.canvas.create_image(200, 200, image=None)
 
         # Create label
-        self.label = Label(self.root, text='Gus')
+        self.label = Label(self.root, text=None)
         self.label.configure(font=('Calibri', 20))
         self.label.grid(row=2, rowspan=2, sticky='NWSE')
 
@@ -49,6 +56,8 @@ class Window:
         for widget in self.root.winfo_children():
             widget.configure(bg=default_bg)
 
+        self.update()
+
     def show(self):
         """
         Shows a random image of Gus and nickname
@@ -61,7 +70,32 @@ class Window:
         Updates current image and nickname
         :return: None
         """
-        pass
+        self.update_image()
+        self.update_name()
+
+    def update_image(self):
+        """
+        Modifies current image on canvas
+        :return: None
+        """
+        im = Image.open(self.get_image())
+        im = im.resize((403, 403), Image.ANTIALIAS)
+        im = ImageTk.PhotoImage(im)
+        self.canvas.itemconfig(self.image, image=im)
+        self.canvas.image = im
+
+    def update_name(self):
+        """
+        Modified current name on canvas
+        :return: None
+        """
+        self.label.config(text=self.get_name())
+
+    def get_image(self):
+        return random.choice(self.images)
+
+    def get_name(self):
+        return random.choice(self.names)
 
     def run(self):
         self.root.mainloop()
