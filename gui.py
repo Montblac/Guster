@@ -1,17 +1,12 @@
 from tkinter import Tk, Button, Canvas, Label
 from PIL import ImageTk, Image
 import random
-import name
 
 
 class Window:
     def __init__(self, names=None, images=None):
-        # List of nicknames and images
-        #self.names = names
-        self.names = ['Gus',
-                      'Bruton Gaster',
-                      'Ghee Buttersnaps',
-                      'Supersniffer']
+        self.name = None
+        self.names = names
         #self.images = images
         self.images = ['images/sm_img1.jpg',
                        'images/sm_img2.jpg',
@@ -19,8 +14,6 @@ class Window:
                        'images/sm_img4.jpeg',
                        'images/sm_img5.jpg']
 
-        # Active nickname and image
-        self.name = None
 
         self.root = Tk()
         self.root.title('Bruton Gaster')
