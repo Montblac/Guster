@@ -1,6 +1,5 @@
 import urllib.request
 import re
-import random
 from bs4 import BeautifulSoup
 
 psych_url = 'https://psychusa.fandom.com/wiki/List_of_Gus%27_Nicknames'
@@ -58,13 +57,6 @@ class NameGenerator:
         """
         self.open()
         self.fetch()
-
-    def get_name(self):
-        """
-        Returns a random name from the list
-        :return: str
-        """
-        return random.choice(self.names)
 
     def names(self):
         return self.names()
