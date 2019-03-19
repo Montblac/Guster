@@ -14,7 +14,6 @@ class Window:
                        'images/sm_img4.jpeg',
                        'images/sm_img5.jpg']
 
-
         self.root = Tk()
         self.root.title('Bruton Gaster')
         self.root.resizable(False, False)
