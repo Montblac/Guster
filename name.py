@@ -11,6 +11,9 @@ class NameGenerator:
         self.page = None
         self.names = None
 
+        self.open()
+        self.fetch()
+
     def open(self):
         """
         Opens the url and stores the URL object
@@ -49,14 +52,6 @@ class NameGenerator:
                     if word != '':
                         names.append(re.search(p2, word).group(0).strip())
         self.names = names
-
-    def initialize(self):
-        """
-        Initializes the class object
-        :return: None
-        """
-        self.open()
-        self.fetch()
 
     def names(self):
         return self.names()
