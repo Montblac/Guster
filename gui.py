@@ -92,8 +92,3 @@ class Window:
 
     def run(self):
         self.root.mainloop()
-
-
-if __name__ == '__main__':
-    win = Window()
-    win.run()
