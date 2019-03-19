@@ -3,32 +3,37 @@ from PIL import ImageTk, Image
 
 
 class Window:
-    def __init__(self, name=None):
-        self.name = name
-        self.img = None
+    def __init__(self):
+        self.name = None
+        self.image = None
 
         self.root = Tk()
         self.root.title('Bruton Gaster')
         self.root.resizable(False, False)
 
         # Fixed size 500x500
-        self.root.geometry("500x500")
+        self.root.geometry('500x500')
 
         # Centers window
         x_offset = int(self.root.winfo_screenwidth() / 2 - 500 / 2)
         y_offset = int(self.root.winfo_screenheight() / 2 - 500 / 2)
-        self.root.geometry("+{}+{}".format(x_offset, y_offset))
+        self.root.geometry('+{}+{}'.format(x_offset, y_offset))
 
         # Create canvas
-        canvas = Canvas(self.root, width=400, height=400)
-        canvas.grid(row=0, padx=48, pady=10)
+        self.canvas = Canvas(self.root, width=400, height=400)
+        self.canvas.grid(row=0, padx=48, pady=10)
 
-        #im = ImageTk.PhotoImage(Image.open("images/med_img1.jpg"))
-        #canvas.create_image(400, 400, image=im)
+        # TODO: Add image creation to a function
+        # im = ImageTk.PhotoImage(Image.open("images/sm_img1.jpg"))
+        im = Image.open('images/sm_img1.jpg')
+        im = im.resize((403, 403), Image.ANTIALIAS)
+        im = ImageTk.PhotoImage(im)
+        self.canvas.create_image(200, 200, image=im)
+        self.canvas.image = im
         #canvas.create_rectangle(0, 0, 400, 400, fill='blue')
 
         # Create label
-        self.label = Label(self.root, text="Gus")
+        self.label = Label(self.root, text='Gus')
         self.label.configure(font=('Calibri', 20))
         self.label.grid(row=2, rowspan=2, sticky='NWSE')
 
