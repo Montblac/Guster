@@ -52,6 +52,3 @@ class NameGenerator:
                     if word != '':
                         names.append(re.search(p2, word).group(0).strip())
         self.names = names
-
-    def names(self):
-        return self.names()
