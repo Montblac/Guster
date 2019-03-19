@@ -65,3 +65,6 @@ class NameGenerator:
         :return: str
         """
         return random.choice(self.names)
+
+    def names(self):
+        return self.names()
