@@ -7,12 +7,7 @@ class Window:
     def __init__(self, names=None, images=None):
         self.name = None
         self.names = names
-        #self.images = images
-        self.images = ['images/sm_img1.jpg',
-                       'images/sm_img2.jpg',
-                       'images/sm_img3.jpg',
-                       'images/sm_img4.jpeg',
-                       'images/sm_img5.jpg']
+        self.images = images
 
         self.root = Tk()
         self.root.title('Bruton Gaster')
