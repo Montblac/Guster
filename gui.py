@@ -10,7 +10,7 @@ class Window:
         self.images = images
 
         self.root = Tk()
-        self.root.title('Bruton Gaster')
+        self.root.title('Burton Guster')
         self.root.resizable(False, False)
 
         # Fixed size 500x500
