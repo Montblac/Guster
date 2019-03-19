@@ -58,13 +58,6 @@ class Window:
 
         self.update()
 
-    def show(self):
-        """
-        Shows a random image of Gus and nickname
-        :return: None
-        """
-        pass
-
     def update(self):
         """
         Updates current image and nickname
