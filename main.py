@@ -1,8 +1,8 @@
-import namegen
+import name
 import greetgen
 
 if __name__ == '__main__':
-    ng = namegen.NameGenerator()
+    ng = name.NameGenerator()
     ng.initialize()
 
     gg = greetgen.GreetGenerator()
