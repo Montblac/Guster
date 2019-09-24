@@ -11,6 +11,7 @@ class Window:
 
         self.root = Tk()
         self.root.title('Burton Guster')
+        self.root.after(1, lambda: self.root.focus_force())
         self.root.resizable(False, False)
 
         # Fixed size 500x500
@@ -44,6 +45,7 @@ class Window:
             widget.configure(bg=default_bg)
 
         self.update()
+
 
     def update(self):
         """
