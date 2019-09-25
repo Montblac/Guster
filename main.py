@@ -8,6 +8,7 @@ if __name__ == '__main__':
 
     imgen = image.ImageGenerator()
     images = imgen.images
+    imgen.get_urls()
 
     win = gui.Window(names=names, images=images)
     win.run()
