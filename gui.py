@@ -1,13 +1,16 @@
 from tkinter import Tk, Button, Canvas, Label
 from PIL import ImageTk, Image
+from io import BytesIO
 import random
+import requests
 
 
 class Window:
-    def __init__(self, names=None, images=None):
+    def __init__(self, names=None, images=None, urls=None):
         self.name = None
         self.names = names
         self.images = images
+        self.urls = urls
 
         self.root = Tk()
         self.root.title('Burton Guster')
@@ -46,7 +49,6 @@ class Window:
 
         self.update()
 
-
     def update(self):
         """
         Updates current image and nickname
@@ -60,11 +62,21 @@ class Window:
         Modifies current image on canvas
         :return: None
         """
-        im = Image.open(self.get_image())
-        im = im.resize((403, 403), Image.ANTIALIAS)
-        im = ImageTk.PhotoImage(im)
-        self.canvas.itemconfig(self.image, image=im)
-        self.canvas.image = im
+        if self.urls:
+            url = self.get_url()
+            data = requests.get(url)
+            im = Image.open(BytesIO(data.content))
+            im = im.resize((403, 403), Image.ANTIALIAS)
+            im = ImageTk.PhotoImage(im)
+            self.canvas.itemconfig(self.image, image=im)
+            self.canvas.image = im
+
+        else:
+            im = Image.open(self.get_image())
+            im = im.resize((403, 403), Image.ANTIALIAS)
+            im = ImageTk.PhotoImage(im)
+            self.canvas.itemconfig(self.image, image=im)
+            self.canvas.image = im
 
     def update_name(self):
         """
@@ -78,6 +90,9 @@ class Window:
 
     def get_name(self):
         return random.choice(self.names)
+
+    def get_url(self):
+        return random.choice(self.urls)
 
     def run(self):
         self.root.mainloop()

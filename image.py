@@ -9,6 +9,7 @@ class ImageGenerator:
 
         self.get_path()
         self.get_images()
+        self.get_urls()
 
     def get_path(self):
         self.path = os.path.join(os.getcwd(), 'images')
