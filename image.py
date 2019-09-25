@@ -22,7 +22,6 @@ class ImageGenerator:
 
     def get_urls(self):
         if os.path.exists('img'):
-            print('entered if')
             with open('img') as f:
                 data = f.readlines()
                 for url in data:
