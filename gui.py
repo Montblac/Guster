@@ -62,21 +62,20 @@ class Window:
         Modifies current image on canvas
         :return: None
         """
-        if self.urls:
-            url = self.get_url()
-            data = requests.get(url)
-            im = Image.open(BytesIO(data.content))
-            im = im.resize((403, 403), Image.ANTIALIAS)
-            im = ImageTk.PhotoImage(im)
-            self.canvas.itemconfig(self.image, image=im)
-            self.canvas.image = im
-
-        else:
+        try:
+            if self.urls:
+                url = self.get_url()
+                data = requests.get(url)
+                im = Image.open(BytesIO(data.content))
+            else:
+                raise IOError
+        except IOError:
             im = Image.open(self.get_image())
-            im = im.resize((403, 403), Image.ANTIALIAS)
-            im = ImageTk.PhotoImage(im)
-            self.canvas.itemconfig(self.image, image=im)
-            self.canvas.image = im
+
+        im = im.resize((403, 403), Image.ANTIALIAS)
+        im = ImageTk.PhotoImage(im)
+        self.canvas.itemconfig(self.image, image=im)
+        self.canvas.image = im
 
     def update_name(self):
         """
