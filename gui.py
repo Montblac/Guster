@@ -11,6 +11,7 @@ class Window:
         self.names = names
         self.images = images
         self.urls = urls
+        self.prev = None
 
         self.root = Tk()
         self.root.title('Burton Guster')
@@ -74,6 +75,9 @@ class Window:
         """
         try:
             url = self.get_url()
+            while url == self.prev:
+                url = self.get_url()
+            self.prev = url
             response = requests.get(url)
             im = Image.open(BytesIO(response.content))
 
@@ -83,7 +87,6 @@ class Window:
 
         fixed_scale = max(self.wscale, self.hscale)
         im = im.resize((int(403*fixed_scale), int(403*fixed_scale)), Image.ANTIALIAS)
-        print(self.wscale, self.hscale)
 
         im = ImageTk.PhotoImage(im)
         self.canvas.itemconfig(self.image, image=im)
