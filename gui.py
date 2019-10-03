@@ -28,22 +28,16 @@ class Window:
             self.hscale = self.hscreen / self.default_dims[1]
 
         # Fixed size 500x500
-        #self.root.geometry('500x500')
         self.root.geometry(f'{int(500*self.wscale)}x{int(500*self.hscale)}')
 
         # Centers window
-        # x_offset = int(self.root.winfo_screenwidth() / 2 - 500 / 2)
-        # y_offset = int(self.root.winfo_screenheight() / 2 - 500 / 2)
         x_offset = int(self.wscreen / 2 - 500*self.wscale / 2)
         y_offset = int(self.hscreen / 2 - 500*self.hscale / 2)
         self.root.geometry('+{}+{}'.format(x_offset, y_offset))
 
         # Create canvas
-        # self.canvas = Canvas(self.root, width=400, height=400)
         self.canvas = Canvas(self.root, width=400*self.wscale, height=400*self.hscale)
-        # self.canvas.grid(row=0, padx=48, pady=10)
         self.canvas.grid(row=0, padx=48*self.wscale, pady=10*self.hscale)
-        # self.image = self.canvas.create_image(200, 200, image=None)
         self.image = self.canvas.create_image(200*self.wscale, 200*self.hscale, image=None)
 
         # Create label
@@ -55,7 +49,6 @@ class Window:
         self.button = Button(self.root, text="Hear about Pluto?", command=self.update)
         self.button.configure(fg='#191970', activeforeground='white', bd=0, font=('Calibri', int(16*self.wscale)))
         self.button.configure(highlightthickness=0, highlightbackground='#708090')
-        # self.button.grid(row=4, pady=14, sticky='NWSE')
         self.button.grid(row=4, pady=0.5*self.hscale, sticky='NWSE')
 
         # Default background
@@ -88,7 +81,6 @@ class Window:
             print(f'Connection Error: {connection_err}')
             im = Image.open(self.get_image())
 
-        # im = im.resize((403, 403), Image.ANTIALIAS)
         fixed_scale = max(self.wscale, self.hscale)
         im = im.resize((int(403*fixed_scale), int(403*fixed_scale)), Image.ANTIALIAS)
         print(self.wscale, self.hscale)
