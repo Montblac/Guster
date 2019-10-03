@@ -17,16 +17,32 @@ class Window:
         self.root.after(1, lambda: self.root.focus_force())
         self.root.resizable(False, False)
 
+        self.screen_width = self.root.winfo_screenwidth()
+        self.screen_height = self.root.winfo_screenheight()
+        self.app_width = int(self.screen_width * 0.3472)  # 0.2604)
+        self.app_height = int(self.screen_height * 0.5555)  # 0.4630)
+        self.canvas_width = int(self.screen_width * 0.2778)
+        self.canvas_height = int(self.screen_height * 0.4444)
+        self.img_width = int(self.screen_width * 0.2799)
+        self.img_height = int(self.screen_height * 0.4478)
+
         # Fixed size 500x500
-        self.root.geometry('500x500')
+        # self.root.geometry('500x500')
+
+        self.root.geometry(f'{self.app_width}x{self.app_height}')
+
 
         # Centers window
-        x_offset = int(self.root.winfo_screenwidth() / 2 - 500 / 2)
-        y_offset = int(self.root.winfo_screenheight() / 2 - 500 / 2)
+        # x_offset = int(self.root.winfo_screenwidth() / 2 - 500 / 2)
+        # y_offset = int(self.root.winfo_screenheight() / 2 - 500 / 2)
+        x_offset = int(self.screen_width / 2 - self.app_width / 2)
+        y_offset = int(self.screen_height / 2 - self.app_height / 2)
+
         self.root.geometry('+{}+{}'.format(x_offset, y_offset))
 
         # Create canvas
-        self.canvas = Canvas(self.root, width=400, height=400)
+        # self.canvas = Canvas(self.root, width=400, height=400)
+        self.canvas = Canvas(self.root, width=self.canvas_width, height=self.canvas_height)
         self.canvas.grid(row=0, padx=48, pady=10)
         self.image = self.canvas.create_image(200, 200, image=None)
 
@@ -71,7 +87,8 @@ class Window:
             print(f'Connection Error: {connection_err}')
             im = Image.open(self.get_image())
 
-        im = im.resize((403, 403), Image.ANTIALIAS)
+        #im = im.resize((403, 403), Image.ANTIALIAS)
+        im = im.resize((self.img_width, self.img_height), Image.ANTIALIAS)
         im = ImageTk.PhotoImage(im)
         self.canvas.itemconfig(self.image, image=im)
         self.canvas.image = im
