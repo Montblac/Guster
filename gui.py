@@ -63,13 +63,12 @@ class Window:
         :return: None
         """
         try:
-            if self.urls:
-                url = self.get_url()
-                data = requests.get(url)
-                im = Image.open(BytesIO(data.content))
-            else:
-                raise IOError
-        except IOError:
+            url = self.get_url()
+            response = requests.get(url)
+            im = Image.open(BytesIO(response.content))
+
+        except requests.ConnectionError as connection_err:
+            print(f'Connection Error: {connection_err}')
             im = Image.open(self.get_image())
 
         im = im.resize((403, 403), Image.ANTIALIAS)
