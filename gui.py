@@ -48,15 +48,15 @@ class Window:
 
         # Create label
         self.label = Label(self.root, text=None)
-        self.label.configure(font=('Calibri', 20))
+        self.label.configure(font=('Calibri', 18*self.wscale))
         self.label.grid(row=2, rowspan=2, sticky='NWSE')
 
         # Create button
         self.button = Button(self.root, text="Hear about Pluto?", command=self.update)
-        self.button.configure(fg='#191970', activeforeground='white', bd=0, font=('Calibri', 20))
+        self.button.configure(fg='#191970', activeforeground='white', bd=0, font=('Calibri', 16*self.wscale))
         self.button.configure(highlightthickness=0, highlightbackground='#708090')
         # self.button.grid(row=4, pady=14, sticky='NWSE')
-        self.button.grid(row=4, pady=14*self.hscale, sticky='NWSE')
+        self.button.grid(row=4, pady=0.5*self.hscale, sticky='NWSE')
 
         # Default background
         default_bg = '#708090'
