@@ -89,7 +89,8 @@ class Window:
             im = Image.open(self.get_image())
 
         # im = im.resize((403, 403), Image.ANTIALIAS)
-        im = im.resize((int(403*self.wscale), int(403*self.hscale)), Image.ANTIALIAS)
+        fixed_scale = max(self.wscale, self.hscale)
+        im = im.resize((int(403*fixed_scale), int(403*fixed_scale)), Image.ANTIALIAS)
         print(self.wscale, self.hscale)
 
         im = ImageTk.PhotoImage(im)
