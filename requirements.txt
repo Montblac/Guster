@@ -3,8 +3,8 @@ bs4==0.0.1
 certifi==2020.4.5.1
 chardet==3.0.4
 idna==2.9
-Pillow==6.2.0
 requests==2.23.0
+Pillow>=6.2.2
 soupsieve==1.9.2
 urllib3==1.25.9
 virtualenv==16.7.2
