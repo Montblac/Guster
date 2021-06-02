@@ -6,5 +6,5 @@ idna==2.9
 Pillow==8.1.1
 requests==2.23.0
 soupsieve==1.9.2
-urllib3==1.25.9
+urllib3==1.26.5
 virtualenv==16.7.2
