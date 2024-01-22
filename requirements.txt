@@ -3,7 +3,7 @@ bs4==0.0.1
 certifi==2023.7.22
 chardet==3.0.4
 idna==2.9
-Pillow==10.0.1
+Pillow==10.2.0
 requests==2.31.0
 soupsieve==1.9.2
 urllib3==1.26.18
