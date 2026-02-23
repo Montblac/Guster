@@ -7,4 +7,4 @@ Pillow==10.0.1
 requests==2.31.0
 soupsieve==1.9.2
 urllib3==1.26.18
-virtualenv==16.7.2
+virtualenv==20.36.1
