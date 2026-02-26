@@ -1,112 +1,179 @@
-from tkinter import Tk, Button, Canvas, Label
-from PIL import ImageTk, Image
-from io import BytesIO
+import html
+import mimetypes
+import os
 import random
-import requests
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from urllib.parse import parse_qs, urlparse, quote
 
 
-class Window:
-    def __init__(self, names=None, images=None, urls=None):
-        self.name = None
-        self.names = names
-        self.images = images
-        self.urls = urls
-        self.prev = None
+class WebApp:
+    def __init__(self, images=None, host='0.0.0.0', port=5000):
+        self.images = images or []
+        self.host = host
+        self.port = port
+        self.image_dir = Path(os.getcwd()) / 'images'
+        self.image_names = [Path(path).name for path in self.images]
 
-        self.root = Tk()
-        self.root.title('Burton Guster')
-        self.root.after(1, lambda: self.root.focus_force())
-        self.root.resizable(False, False)
+    def get_image_name(self, previous_image=None):
+        if not self.image_names:
+            return None
 
-        self.wscreen = self.root.winfo_screenwidth()
-        self.hscreen = self.root.winfo_screenheight()
-        self.wscale = 1
-        self.hscale = 1
+        choices = [name for name in self.image_names if name != previous_image]
+        if not choices:
+            choices = self.image_names
+        return random.choice(choices)
 
-        self.default_dims = (1920, 1080)
-        if self.default_dims != (self.wscreen, self.hscreen):
-            self.wscale = self.wscreen / self.default_dims[0]
-            self.hscale = self.hscreen / self.default_dims[1]
+    def resolve_image_path(self, image_name):
+        if not image_name:
+            return None
 
-        # Fixed size 500x500
-        self.root.geometry(f'{int(500*self.wscale)}x{int(500*self.hscale)}')
-
-        # Centers window
-        x_offset = int(self.wscreen / 2 - 500*self.wscale / 2)
-        y_offset = int(self.hscreen / 2 - 500*self.hscale / 2)
-        self.root.geometry('+{}+{}'.format(x_offset, y_offset))
-
-        # Create canvas
-        self.canvas = Canvas(self.root, width=400*self.wscale, height=400*self.hscale)
-        self.canvas.grid(row=0, padx=48*self.wscale, pady=10*self.hscale)
-        self.image = self.canvas.create_image(200*self.wscale, 200*self.hscale, image=None)
-
-        # Create label
-        self.label = Label(self.root, text=None)
-        self.label.configure(font=('Calibri', int(18*self.wscale)))
-        self.label.grid(row=2, rowspan=2, sticky='NWSE')
-
-        # Create button
-        self.button = Button(self.root, text="Hear about Pluto?", command=self.update)
-        self.button.configure(fg='#191970', activeforeground='white', bd=0, font=('Calibri', int(16*self.wscale)))
-        self.button.configure(highlightthickness=0, highlightbackground='#708090')
-        self.button.grid(row=4, pady=0.5*self.hscale, sticky='NWSE')
-
-        # Default background
-        default_bg = '#708090'
-        self.root.configure(bg=default_bg)
-        for widget in self.root.winfo_children():
-            widget.configure(bg=default_bg)
-
-        self.update()
-
-    def update(self):
-        """
-        Updates current image and nickname
-        :return: None
-        """
-        self.update_image()
-        self.update_name()
-
-    def update_image(self):
-        """
-        Modifies current image on canvas
-        :return: None
-        """
+        candidate = (self.image_dir / image_name).resolve()
         try:
-            url = self.get_url()
-            while url == self.prev:
-                url = self.get_url()
-            self.prev = url
-            response = requests.get(url)
-            im = Image.open(BytesIO(response.content))
+            candidate.relative_to(self.image_dir.resolve())
+        except ValueError:
+            return None
 
-        except requests.ConnectionError as connection_err:
-            print(f'Connection Error: {connection_err}')
-            im = Image.open(self.get_image())
+        if not candidate.is_file():
+            return None
+        return candidate
 
-        fixed_scale = max(self.wscale, self.hscale)
-        im = im.resize((int(403*fixed_scale), int(403*fixed_scale)), Image.ANTIALIAS)
+    def make_handler(self):
+        app = self
 
-        im = ImageTk.PhotoImage(im)
-        self.canvas.itemconfig(self.image, image=im)
-        self.canvas.image = im
+        class Handler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                parsed = urlparse(self.path)
+                if parsed.path == '/':
+                    previous_image = parse_qs(parsed.query).get('previous_image', [None])[0]
+                    image_name = app.get_image_name(previous_image)
+                    self._send_html(app.render_index(image_name))
+                    return
 
-    def update_name(self):
-        """
-        Modified current name on canvas
-        :return: None
-        """
-        self.label.config(text=self.get_name())
+                if parsed.path.startswith('/images/'):
+                    image_name = parsed.path.replace('/images/', '', 1)
+                    self._send_image(image_name)
+                    return
 
-    def get_image(self):
-        return random.choice(self.images)
+                self.send_error(404, 'Not found')
 
-    def get_name(self):
-        return random.choice(self.names)
+            def do_POST(self):
+                if self.path != '/':
+                    self.send_error(404, 'Not found')
+                    return
 
-    def get_url(self):
-        return random.choice(self.urls)
+                length = int(self.headers.get('Content-Length', 0))
+                params = parse_qs(self.rfile.read(length).decode('utf-8'))
+                previous_image = params.get('previous_image', [None])[0]
+                image_name = app.get_image_name(previous_image)
+                self._send_html(app.render_index(image_name))
+
+            def do_HEAD(self):
+                if self.path == '/':
+                    html_doc = app.render_index(app.get_image_name())
+                    encoded = html_doc.encode('utf-8')
+                    self.send_response(200)
+                    self.send_header('Content-Type', 'text/html; charset=utf-8')
+                    self.send_header('Content-Length', str(len(encoded)))
+                    self.end_headers()
+                    return
+                self.send_error(404, 'Not found')
+
+            def _send_html(self, html_doc):
+                encoded = html_doc.encode('utf-8')
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/html; charset=utf-8')
+                self.send_header('Content-Length', str(len(encoded)))
+                self.end_headers()
+                self.wfile.write(encoded)
+
+            def _send_image(self, image_name):
+                image_path = app.resolve_image_path(image_name)
+                if not image_path:
+                    self.send_error(404, 'Image not found')
+                    return
+
+                content_type = mimetypes.guess_type(str(image_path))[0] or 'application/octet-stream'
+                data = image_path.read_bytes()
+                self.send_response(200)
+                self.send_header('Content-Type', content_type)
+                self.send_header('Content-Length', str(len(data)))
+                self.end_headers()
+                self.wfile.write(data)
+
+            def log_message(self, format, *args):
+                return
+
+        return Handler
+
+    def render_index(self, image_name):
+        if image_name:
+            image_src = quote(image_name)
+            image_html = (
+                f'<img src="/images/{image_src}" alt="Random Guster image" />'
+                '<form method="post">'
+                f'<input type="hidden" name="previous_image" value="{html.escape(image_name)}" />'
+                '<button type="submit">Generate another image</button>'
+                '</form>'
+            )
+        else:
+            image_html = '<p>No images found in the <code>images/</code> directory.</p>'
+
+        return f'''<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Guster Image Generator</title>
+  <style>
+    body {{
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #708090;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }}
+    .container {{
+      width: min(90vw, 520px);
+      text-align: center;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+    }}
+    img {{
+      width: 100%;
+      max-height: 420px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+    }}
+    button {{
+      margin-top: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #191970;
+      color: white;
+      font-size: 1rem;
+      padding: 10px 18px;
+      cursor: pointer;
+    }}
+    button:hover {{
+      background: #0f0f4c;
+    }}
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>Burton Guster Image Generator</h1>
+    {image_html}
+  </main>
+</body>
+</html>'''
 
     def run(self):
-        self.root.mainloop()
+        server = ThreadingHTTPServer((self.host, self.port), self.make_handler())
+        print(f'Serving on http://{self.host}:{self.port}')
+        server.serve_forever()
