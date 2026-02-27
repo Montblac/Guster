@@ -89,27 +89,30 @@ class GusterWebApp:
         return Handler
 
     def render_index(self, image_url: str | None, nickname: str | None) -> str:
+        display_name = nickname or "No nickname available"
         nickname_html = (
-            f'<p class="nickname">{html.escape(nickname)}</p>'
+            f'<h1 class="nickname">{html.escape(display_name)}</h1>'
             if nickname
-            else '<p class="nickname empty">No nicknames found in <code>data/nicknames.txt</code>.</p>'
+            else '<h1 class="nickname empty">No nicknames found in <code>data/nicknames.txt</code>.</h1>'
         )
 
         if image_url:
             image_html = (
-                f'<img src="{html.escape(image_url, quote=True)}" alt="Random Guster image" />'
+                '<figure class="image-frame">'
+                f'<img src="{html.escape(image_url, quote=True)}" alt="Random Guster image" loading="eager" decoding="async" />'
+                "</figure>"
                 '<form method="post">'
                 f'<input type="hidden" name="previous_image" value="{html.escape(image_url)}" />'
                 f'<input type="hidden" name="previous_nickname" value="{html.escape(nickname or "")}" />'
-                '<button type="submit">Generate another</button>'
+                '<button type="submit">C&#39;mon, son. Another one.</button>'
                 "</form>"
             )
         else:
             image_html = (
-                "<p>No image URLs found in <code>data/image_urls.txt</code>. Add one URL per line.</p>"
+                '<p class="empty">No image URLs found in <code>data/image_urls.txt</code>. Add one URL per line.</p>'
                 '<form method="post">'
                 f'<input type="hidden" name="previous_nickname" value="{html.escape(nickname or "")}" />'
-                '<button type="submit">Generate another nickname</button>'
+                '<button type="submit">C&#39;mon, son. Another one.</button>'
                 "</form>"
             )
 
@@ -118,23 +121,125 @@ class GusterWebApp:
 <head>
   <meta charset=\"utf-8\" />
   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
+  <meta name="color-scheme" content="dark" />
   <title>Guster Generator</title>
   <style>
-    body {{ margin: 2rem auto; max-width: 42rem; padding: 0 1rem; font-family: Arial, sans-serif; }}
-    .container {{
-      text-align: center;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 1rem;
+    :root {{
+      --nord0: #2e3440;
+      --nord1: #3b4252;
+      --nord2: #434c5e;
+      --nord3: #4c566a;
+      --nord4: #d8dee9;
+      --nord5: #e5e9f0;
+      --nord6: #eceff4;
+      --nord8: #88c0d0;
+      --nord9: #81a1c1;
+      --nord10: #5e81ac;
+      --radius: clamp(0.6rem, 1.2vw, 1rem);
+      --space: clamp(0.9rem, 2vw, 1.35rem);
     }}
-    .nickname {{ font-size: 1.1rem; font-weight: 700; }}
-    img {{ width: 100%; max-height: 420px; object-fit: cover; border-radius: 8px; }}
-    button {{ margin-top: 1rem; padding: 0.6rem 1rem; }}
+    * {{ box-sizing: border-box; }}
+    html, body {{ height: 100%; }}
+    body {{
+      margin: 0;
+      font-family: "Segoe UI Variable", "Segoe UI", "Inter", system-ui, sans-serif;
+      background:
+        radial-gradient(1000px 680px at 8% 8%, rgba(94, 129, 172, 0.34), transparent 60%),
+        radial-gradient(780px 560px at 92% 92%, rgba(136, 192, 208, 0.2), transparent 62%),
+        var(--nord0);
+      color: var(--nord6);
+      display: grid;
+      place-items: center;
+      padding: clamp(0.75rem, 1.9vw, 1.4rem);
+    }}
+    .container {{
+      width: min(100%, 70rem);
+      display: grid;
+      gap: var(--space);
+      text-align: center;
+      background: linear-gradient(180deg, rgba(59, 66, 82, 0.93), rgba(46, 52, 64, 0.98));
+      border: 1px solid rgba(216, 222, 233, 0.16);
+      border-radius: var(--radius);
+      box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.35);
+      padding: clamp(1rem, 2.2vw, 1.8rem);
+      backdrop-filter: blur(6px);
+    }}
+    .app-label {{
+      margin: 0;
+      font-size: 0.72rem;
+      font-weight: 650;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--nord4);
+      opacity: 0.82;
+    }}
+    h1 {{
+      margin: 0;
+      font-size: clamp(1.25rem, 3.1vw, 2.45rem);
+      letter-spacing: 0.02em;
+      color: var(--nord5);
+    }}
+    .nickname {{
+      margin: 0;
+      font-size: clamp(1.1rem, 2.9vw, 2rem);
+      font-weight: 700;
+      color: var(--nord8);
+      overflow-wrap: anywhere;
+      line-height: 1.2;
+    }}
+    .image-frame {{
+      margin: 0;
+      width: 100%;
+      border-radius: calc(var(--radius) - 0.1rem);
+      border: 1px solid rgba(216, 222, 233, 0.18);
+      overflow: hidden;
+      background: var(--nord1);
+    }}
+    img {{
+      display: block;
+      width: 100%;
+      max-height: min(58vh, 48rem);
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+    }}
+    form {{ margin: 0; }}
+    button {{
+      width: min(100%, 18rem);
+      border: 1px solid rgba(216, 222, 233, 0.26);
+      border-radius: 999px;
+      padding: 0.8rem 1.2rem;
+      font: inherit;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      color: var(--nord6);
+      background:
+        linear-gradient(165deg, rgba(136, 192, 208, 0.2), rgba(46, 52, 64, 0)) padding-box,
+        linear-gradient(135deg, var(--nord10), var(--nord9)) border-box;
+      box-shadow: 0 0.45rem 1.2rem rgba(94, 129, 172, 0.35);
+      cursor: pointer;
+      transition: filter 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+    }}
+    button:hover {{
+      filter: brightness(1.08);
+      box-shadow: 0 0.65rem 1.35rem rgba(129, 161, 193, 0.42);
+    }}
+    button:active {{ transform: translateY(1px); }}
+    button:focus-visible {{
+      outline: 2px solid var(--nord8);
+      outline-offset: 2px;
+    }}
+    code {{
+      background: rgba(229, 233, 240, 0.12);
+      border-radius: 0.35rem;
+      padding: 0.08rem 0.34rem;
+      color: var(--nord4);
+    }}
+    .empty {{ color: var(--nord4); }}
   </style>
 </head>
 <body>
   <main class=\"container\">
-    <h1>Burton Guster Generator</h1>
+    <p class="app-label">Guster Nickname Generator</p>
     {nickname_html}
     {image_html}
   </main>
