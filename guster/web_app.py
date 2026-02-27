@@ -1,4 +1,5 @@
 ﻿import html
+import json
 import random
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
@@ -16,6 +17,7 @@ class GusterWebApp:
         self.nicknames = nicknames or []
         self.host = host
         self.port = port
+        self.max_recent_images = 10
 
     @staticmethod
     def _choose_different(options: list[str], previous_value: str | None = None) -> str | None:
@@ -33,6 +35,35 @@ class GusterWebApp:
     def get_nickname(self, previous_nickname: str | None = None) -> str | None:
         return self._choose_different(self.nicknames, previous_nickname)
 
+    @staticmethod
+    def _parse_recent_images(raw_value: str | None) -> list[str]:
+        if not raw_value:
+            return []
+        try:
+            parsed = json.loads(raw_value)
+        except (json.JSONDecodeError, TypeError):
+            return []
+        if not isinstance(parsed, list):
+            return []
+        return [value for value in parsed if isinstance(value, str)]
+
+    def _build_recent_images(self, recent_images: list[str], current_image: str | None) -> list[str]:
+        values = [value for value in recent_images if isinstance(value, str)]
+        if current_image:
+            values = [value for value in values if value != current_image]
+            values.append(current_image)
+        return values[-self.max_recent_images :]
+
+    def get_image_url_with_history(self, recent_images: list[str]) -> str | None:
+        if not self.image_urls:
+            return None
+
+        recent_set = set(recent_images)
+        candidates = [url for url in self.image_urls if url not in recent_set]
+        if not candidates:
+            candidates = self.image_urls
+        return random.choice(candidates)
+
     def make_handler(self):
         app = self
 
@@ -46,9 +77,13 @@ class GusterWebApp:
                 params = parse_qs(parsed.query)
                 previous_image = params.get("previous_image", [None])[0]
                 previous_nickname = params.get("previous_nickname", [None])[0]
-                image_url = app.get_image_url(previous_image)
+                recent_images = app._parse_recent_images(params.get("recent_images", [None])[0])
+                image_url = app.get_image_url_with_history(recent_images)
+                if image_url is None:
+                    image_url = app.get_image_url(previous_image)
                 nickname = app.get_nickname(previous_nickname)
-                self._send_html(app.render_index(image_url, nickname))
+                updated_recent_images = app._build_recent_images(recent_images, image_url)
+                self._send_html(app.render_index(image_url, nickname, updated_recent_images))
 
             def do_POST(self):
                 if self.path != "/":
@@ -59,16 +94,22 @@ class GusterWebApp:
                 params = parse_qs(self.rfile.read(length).decode("utf-8"))
                 previous_image = params.get("previous_image", [None])[0]
                 previous_nickname = params.get("previous_nickname", [None])[0]
-                image_url = app.get_image_url(previous_image)
+                recent_images = app._parse_recent_images(params.get("recent_images", [None])[0])
+                image_url = app.get_image_url_with_history(recent_images)
+                if image_url is None:
+                    image_url = app.get_image_url(previous_image)
                 nickname = app.get_nickname(previous_nickname)
-                self._send_html(app.render_index(image_url, nickname))
+                updated_recent_images = app._build_recent_images(recent_images, image_url)
+                self._send_html(app.render_index(image_url, nickname, updated_recent_images))
 
             def do_HEAD(self):
                 if self.path != "/":
                     self.send_error(404, "Not found")
                     return
 
-                html_doc = app.render_index(app.get_image_url(), app.get_nickname())
+                image_url = app.get_image_url()
+                recent_images = app._build_recent_images([], image_url)
+                html_doc = app.render_index(image_url, app.get_nickname(), recent_images)
                 encoded = html_doc.encode("utf-8")
                 self.send_response(200)
                 self.send_header("Content-Type", "text/html; charset=utf-8")
@@ -88,7 +129,15 @@ class GusterWebApp:
 
         return Handler
 
-    def render_index(self, image_url: str | None, nickname: str | None) -> str:
+    def render_index(
+        self,
+        image_url: str | None,
+        nickname: str | None,
+        recent_images: list[str] | None = None,
+    ) -> str:
+        recent_images = recent_images or []
+        serialized_recent_images = html.escape(json.dumps(recent_images, separators=(",", ":")))
+
         display_name = nickname or "No nickname available"
         nickname_html = (
             f'<h1 class="nickname">{html.escape(display_name)}</h1>'
@@ -104,6 +153,7 @@ class GusterWebApp:
                 '<form method="post">'
                 f'<input type="hidden" name="previous_image" value="{html.escape(image_url)}" />'
                 f'<input type="hidden" name="previous_nickname" value="{html.escape(nickname or "")}" />'
+                f'<input type="hidden" name="recent_images" value="{serialized_recent_images}" />'
                 '<button type="submit">C&#39;mon, son. Another one.</button>'
                 "</form>"
             )
@@ -112,6 +162,7 @@ class GusterWebApp:
                 '<p class="empty">No image URLs found in <code>data/image_urls.txt</code>. Add one URL per line.</p>'
                 '<form method="post">'
                 f'<input type="hidden" name="previous_nickname" value="{html.escape(nickname or "")}" />'
+                f'<input type="hidden" name="recent_images" value="{serialized_recent_images}" />'
                 '<button type="submit">C&#39;mon, son. Another one.</button>'
                 "</form>"
             )
@@ -121,7 +172,7 @@ class GusterWebApp:
 <head>
   <meta charset=\"utf-8\" />
   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
-  <meta name="color-scheme" content="dark" />
+  <meta name=\"color-scheme\" content=\"dark\" />
   <title>Guster Generator</title>
   <style>
     :root {{
@@ -242,7 +293,7 @@ class GusterWebApp:
 </head>
 <body>
   <main class=\"container\">
-    <p class="app-label">Guster Nickname Generator</p>
+    <p class=\"app-label\">Guster Nickname Generator</p>
     {nickname_html}
     {image_html}
   </main>
