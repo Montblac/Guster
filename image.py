@@ -2,27 +2,15 @@ import os
 
 
 class ImageGenerator:
-    def __init__(self):
-        self.images = []
+    def __init__(self, source_path='img'):
+        self.source_path = source_path
         self.urls = []
-        self.path = None
-
-        self.get_path()
-        self.get_images()
         self.get_urls()
 
-    def get_path(self):
-        self.path = os.path.join(os.getcwd(), 'images')
-
-    def get_images(self):
-        if os.path.exists(self.path):
-            for file in os.listdir(self.path):
-                if not file.startswith('.'):
-                    self.images.append(os.path.join(self.path, file))
-
     def get_urls(self):
-        if os.path.exists('img'):
-            with open('img') as f:
-                data = f.readlines()
-                for url in data:
-                    self.urls.append(url.strip())
+        if os.path.exists(self.source_path):
+            with open(self.source_path, encoding='utf-8') as handle:
+                for line in handle:
+                    value = line.strip()
+                    if value and not value.startswith('#'):
+                        self.urls.append(value)

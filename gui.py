@@ -1,58 +1,48 @@
 import html
-import mimetypes
-import os
 import random
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from pathlib import Path
-from urllib.parse import parse_qs, urlparse, quote
+from urllib.parse import parse_qs
 
 
 class WebApp:
-    def __init__(self, images=None, host='0.0.0.0', port=5000):
+    def __init__(self, images=None, nicknames=None, host='0.0.0.0', port=5000):
         self.images = images or []
+        self.nicknames = nicknames or []
         self.host = host
         self.port = port
-        self.image_dir = Path(os.getcwd()) / 'images'
-        self.image_names = [Path(path).name for path in self.images]
 
     def get_image_name(self, previous_image=None):
-        if not self.image_names:
+        if not self.images:
             return None
 
-        choices = [name for name in self.image_names if name != previous_image]
+        choices = [name for name in self.images if name != previous_image]
         if not choices:
-            choices = self.image_names
+            choices = self.images
         return random.choice(choices)
 
-    def resolve_image_path(self, image_name):
-        if not image_name:
+    def get_nickname(self, previous_nickname=None):
+        if not self.nicknames:
             return None
 
-        candidate = (self.image_dir / image_name).resolve()
-        try:
-            candidate.relative_to(self.image_dir.resolve())
-        except ValueError:
-            return None
-
-        if not candidate.is_file():
-            return None
-        return candidate
+        choices = [name for name in self.nicknames if name != previous_nickname]
+        if not choices:
+            choices = self.nicknames
+        return random.choice(choices)
 
     def make_handler(self):
         app = self
 
         class Handler(BaseHTTPRequestHandler):
             def do_GET(self):
-                parsed = urlparse(self.path)
-                if parsed.path == '/':
-                    previous_image = parse_qs(parsed.query).get('previous_image', [None])[0]
+                path = self.path.split('?', 1)[0]
+                if path == '/':
+                    query = self.path.split('?', 1)[1] if '?' in self.path else ''
+                    params = parse_qs(query)
+                    previous_image = params.get('previous_image', [None])[0]
+                    previous_nickname = params.get('previous_nickname', [None])[0]
                     image_name = app.get_image_name(previous_image)
-                    self._send_html(app.render_index(image_name))
-                    return
-
-                if parsed.path.startswith('/images/'):
-                    image_name = parsed.path.replace('/images/', '', 1)
-                    self._send_image(image_name)
+                    nickname = app.get_nickname(previous_nickname)
+                    self._send_html(app.render_index(image_name, nickname))
                     return
 
                 self.send_error(404, 'Not found')
@@ -65,12 +55,14 @@ class WebApp:
                 length = int(self.headers.get('Content-Length', 0))
                 params = parse_qs(self.rfile.read(length).decode('utf-8'))
                 previous_image = params.get('previous_image', [None])[0]
+                previous_nickname = params.get('previous_nickname', [None])[0]
                 image_name = app.get_image_name(previous_image)
-                self._send_html(app.render_index(image_name))
+                nickname = app.get_nickname(previous_nickname)
+                self._send_html(app.render_index(image_name, nickname))
 
             def do_HEAD(self):
                 if self.path == '/':
-                    html_doc = app.render_index(app.get_image_name())
+                    html_doc = app.render_index(app.get_image_name(), app.get_nickname())
                     encoded = html_doc.encode('utf-8')
                     self.send_response(200)
                     self.send_header('Content-Type', 'text/html; charset=utf-8')
@@ -87,37 +79,35 @@ class WebApp:
                 self.end_headers()
                 self.wfile.write(encoded)
 
-            def _send_image(self, image_name):
-                image_path = app.resolve_image_path(image_name)
-                if not image_path:
-                    self.send_error(404, 'Image not found')
-                    return
-
-                content_type = mimetypes.guess_type(str(image_path))[0] or 'application/octet-stream'
-                data = image_path.read_bytes()
-                self.send_response(200)
-                self.send_header('Content-Type', content_type)
-                self.send_header('Content-Length', str(len(data)))
-                self.end_headers()
-                self.wfile.write(data)
-
             def log_message(self, format, *args):
                 return
 
         return Handler
 
-    def render_index(self, image_name):
+    def render_index(self, image_name, nickname):
+        nickname_html = (
+            f'<p class="nickname">{html.escape(nickname)}</p>'
+            if nickname else
+            '<p class="nickname empty">No nicknames found in <code>nicknames.txt</code>.</p>'
+        )
+
         if image_name:
-            image_src = quote(image_name)
             image_html = (
-                f'<img src="/images/{image_src}" alt="Random Guster image" />'
+                f'<img src="{html.escape(image_name, quote=True)}" alt="Random Guster image" />'
                 '<form method="post">'
                 f'<input type="hidden" name="previous_image" value="{html.escape(image_name)}" />'
+                f'<input type="hidden" name="previous_nickname" value="{html.escape(nickname or "")}" />'
                 '<button type="submit">Generate another image</button>'
                 '</form>'
             )
         else:
-            image_html = '<p>No images found in the <code>images/</code> directory.</p>'
+            image_html = (
+                '<p>No image URLs found in <code>img</code>. Add one URL per line to the file.</p>'
+                '<form method="post">'
+                f'<input type="hidden" name="previous_nickname" value="{html.escape(nickname or "")}" />'
+                '<button type="submit">Generate another nickname</button>'
+                '</form>'
+            )
 
         return f'''<!doctype html>
 <html lang="en">
@@ -168,6 +158,7 @@ class WebApp:
 <body>
   <main class="container">
     <h1>Burton Guster Image Generator</h1>
+    {nickname_html}
     {image_html}
   </main>
 </body>

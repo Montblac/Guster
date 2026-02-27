@@ -1,0 +1,31 @@
+{
+    "version": "0.2.0",
+    "compounds": [
+        {
+            "name": "Run app + Edge",
+            "configurations": [
+                "Python: Run main.py",
+                "Launch Edge (Guster)"
+            ],
+            "stopAll": true
+        }
+    ],
+    "configurations": [
+        {
+            "name": "Python: Run main.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/main.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "justMyCode": true
+        },
+        {
+            "name": "Launch Edge (Guster)",
+            "type": "msedge",
+            "request": "launch",
+            "url": "http://localhost:5000",
+            "webRoot": "${workspaceFolder}"
+        }
+    ]
+}
