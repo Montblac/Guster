@@ -1,9 +1,15 @@
-import image
-import gui
-import name
+from pathlib import Path
 
-if __name__ == '__main__':
-    imgen = image.ImageGenerator()
-    ngen = name.NameGenerator()
-    app = gui.WebApp(images=imgen.urls, nicknames=ngen.names)
+from guster import GusterWebApp, ImageUrlRepository, NicknameRepository
+
+
+def main():
+    base_dir = Path(__file__).resolve().parent
+    image_urls = ImageUrlRepository(base_dir / "data" / "image_urls.txt").load()
+    nicknames = NicknameRepository(base_dir / "data" / "nicknames.txt").load()
+    app = GusterWebApp(image_urls=image_urls, nicknames=nicknames, host="localhost")
     app.run()
+
+
+if __name__ == "__main__":
+    main()
