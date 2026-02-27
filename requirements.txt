@@ -1,10 +1,1 @@
-beautifulsoup4==4.8.0
-bs4==0.0.1
-certifi==2024.7.4
-chardet==3.0.4
-idna==3.7
-Pillow==12.1.1
-requests==2.32.4
-soupsieve==1.9.2
-urllib3==2.6.3
-virtualenv==20.36.1
+beautifulsoup4>=4.12,<5
