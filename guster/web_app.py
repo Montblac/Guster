@@ -190,6 +190,9 @@ class GusterWebApp:
     .image-frame {{
       margin: 0;
       width: 100%;
+      min-height: clamp(14rem, 44vh, 36rem);
+      display: grid;
+      place-items: center;
       border-radius: calc(var(--radius) - 0.1rem);
       border: 1px solid rgba(216, 222, 233, 0.18);
       overflow: hidden;
@@ -198,9 +201,9 @@ class GusterWebApp:
     img {{
       display: block;
       width: 100%;
-      max-height: min(58vh, 48rem);
-      aspect-ratio: 16 / 10;
-      object-fit: cover;
+      height: auto;
+      max-height: min(72vh, 56rem);
+      object-fit: contain;
     }}
     form {{ margin: 0; }}
     button {{
