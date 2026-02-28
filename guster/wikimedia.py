@@ -2,8 +2,50 @@ import json
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
+_REQUIRED_TERMS = ("dule", "hill", "gus", "guster", "shawn", "james", "roday", "psych")
+_BLOCKED_TERMS = (
+    "comic-con",
+    "comic con",
+    "panel",
+    "cast",
+    "group",
+    "reunion",
+    "press line",
+    "red carpet",
+)
+
+
+def _is_preferred_subject(title: str) -> bool:
+    lower = title.lower()
+    return any(t in lower for t in _REQUIRED_TERMS) and not any(t in lower for t in _BLOCKED_TERMS)
+
+
+def _score_title(title: str) -> int:
+    lower = title.lower()
+    score = 0
+    if "dule hill" in lower:
+        score += 5
+    if "burton guster" in lower or "gus" in lower or "guster" in lower:
+        score += 4
+    if "james roday" in lower or "shawn" in lower:
+        score += 2
+    if "psych" in lower:
+        score += 2
+    if "portrait" in lower or "headshot" in lower or "still" in lower:
+        score += 2
+    return score
+
 
 class WikimediaImageRepository:
+    _API_URL = "https://commons.wikimedia.org/w/api.php"
+    _DEFAULT_QUERIES = [
+        '"Dule Hill" portrait',
+        '"Dule Hill" Psych',
+        '"Dule Hill" "James Roday"',
+        '"Burton Guster" Psych',
+    ]
+    _ALLOWED_MIME = {"image/jpeg", "image/jpg", "image/png", "image/webp"}
+
     def __init__(
         self,
         search_queries: list[str] | None = None,
@@ -13,58 +55,18 @@ class WikimediaImageRepository:
         min_height: int = 800,
         timeout_seconds: float = 5.0,
     ):
-        self.search_queries = search_queries or [
-            '"Dule Hill" portrait',
-            '"Dule Hill" Psych',
-            '"Dule Hill" "James Roday"',
-            '"Burton Guster" Psych',
-        ]
+        self.search_queries = search_queries or self._DEFAULT_QUERIES
         self.limit = limit
         self.query_limit = query_limit
         self.min_width = min_width
         self.min_height = min_height
         self.timeout_seconds = timeout_seconds
 
-    @staticmethod
-    def _is_preferred_subject(page_title: str) -> bool:
-        title = page_title.lower()
-        required_terms = ("dule", "hill", "gus", "guster", "shawn", "james", "roday", "psych")
-        blocked_terms = (
-            "comic-con",
-            "comic con",
-            "panel",
-            "cast",
-            "group",
-            "reunion",
-            "press line",
-            "red carpet",
-        )
-        has_subject = any(term in title for term in required_terms)
-        is_blocked = any(term in title for term in blocked_terms)
-        return has_subject and not is_blocked
-
-    @staticmethod
-    def _score_title(page_title: str) -> int:
-        title = page_title.lower()
-        score = 0
-        if "dule hill" in title:
-            score += 5
-        if "burton guster" in title or "gus" in title or "guster" in title:
-            score += 4
-        if "james roday" in title or "shawn" in title:
-            score += 2
-        if "psych" in title:
-            score += 2
-        if "portrait" in title or "headshot" in title or "still" in title:
-            score += 2
-        return score
-
     def _is_high_quality(self, image_info: dict) -> bool:
         mime = str(image_info.get("mime", "")).lower()
         width = int(image_info.get("width", 0))
         height = int(image_info.get("height", 0))
-        allowed_mime = {"image/jpeg", "image/jpg", "image/png", "image/webp"}
-        return mime in allowed_mime and width >= self.min_width and height >= self.min_height
+        return mime in self._ALLOWED_MIME and width >= self.min_width and height >= self.min_height
 
     def _fetch_query(self, query: str) -> list[tuple[int, str]]:
         params = {
@@ -78,52 +80,42 @@ class WikimediaImageRepository:
             "iiprop": "url|size|mime",
             "origin": "*",
         }
-        url = f"https://commons.wikimedia.org/w/api.php?{urlencode(params)}"
-        request = Request(url, headers={"User-Agent": "GusterApp/1.0"})
-
+        request = Request(
+            f"{self._API_URL}?{urlencode(params)}",
+            headers={"User-Agent": "GusterApp/1.0"},
+        )
         try:
             with urlopen(request, timeout=self.timeout_seconds) as response:
                 payload = json.loads(response.read().decode("utf-8"))
         except Exception:
             return []
 
-        pages = payload.get("query", {}).get("pages", {})
         results: list[tuple[int, str]] = []
-        for page in pages.values():
-            page_title = page.get("title", "")
+        for page in payload.get("query", {}).get("pages", {}).values():
+            title = page.get("title", "")
             info = page.get("imageinfo", [])
-            if not info:
+            if not info or not _is_preferred_subject(title):
                 continue
             image_info = info[0]
-            if not self._is_preferred_subject(page_title):
-                continue
             if not self._is_high_quality(image_info):
                 continue
-
-            image_url = image_info.get("url")
-            if image_url:
-                score = self._score_title(page_title) + min(int(image_info.get("width", 0)) // 800, 5)
-                results.append((score, image_url))
+            url = image_info.get("url")
+            if url:
+                score = _score_title(title) + min(int(image_info.get("width", 0)) // 800, 5)
+                results.append((score, url))
         return results
 
     def load(self) -> list[str]:
-        """
-        Fetches high-resolution image URLs from Wikimedia Commons.
-        Prioritizes images focused on Gus or Gus+Shawn and filters out
-        Comic-Con/group-panel style results.
-        Returns an empty list if requests fail.
-        """
-        urls: list[str] = []
-        seen: set[str] = set()
-        scored_urls: list[tuple[int, str]] = []
+        scored: list[tuple[int, str]] = []
         for query in self.search_queries:
-            scored_urls.extend(self._fetch_query(query))
+            scored.extend(self._fetch_query(query))
 
-        for _, image_url in sorted(scored_urls, key=lambda entry: entry[0], reverse=True):
-            if image_url in seen:
-                continue
-            seen.add(image_url)
-            urls.append(image_url)
+        seen: set[str] = set()
+        urls: list[str] = []
+        for _, url in sorted(scored, key=lambda e: e[0], reverse=True):
+            if url not in seen:
+                seen.add(url)
+                urls.append(url)
             if len(urls) >= self.limit:
                 break
         return urls
