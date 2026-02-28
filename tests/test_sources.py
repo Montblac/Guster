@@ -3,7 +3,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from guster.data_sources import TextListRepository, WikimediaImageRepository
+from guster.sources import TextListRepository
+from guster.wikimedia import WikimediaImageRepository
 
 
 class TextListRepositoryTests(unittest.TestCase):
@@ -37,7 +38,7 @@ class WikimediaImageRepositoryTests(unittest.TestCase):
             def read(self):
                 return payload
 
-        with patch("guster.data_sources.urlopen", return_value=FakeResponse()):
+        with patch("guster.wikimedia.urlopen", return_value=FakeResponse()):
             urls = WikimediaImageRepository().load()
 
         self.assertEqual(urls, ["https://a.jpg", "https://b.jpg"])

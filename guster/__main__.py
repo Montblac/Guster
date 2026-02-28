@@ -4,7 +4,7 @@ from guster import GusterWebApp, ImageUrlRepository, NicknameRepository, Wikimed
 
 
 def main():
-    base_dir = Path(__file__).resolve().parent
+    base_dir = Path(__file__).resolve().parent.parent
     remote_image_urls = WikimediaImageRepository().load()
     local_image_urls = ImageUrlRepository(base_dir / "data" / "image_urls.txt").load()
     image_urls = remote_image_urls + [url for url in local_image_urls if url not in remote_image_urls]

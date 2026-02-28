@@ -73,25 +73,16 @@ class GusterWebApp:
                 if parsed.path != "/":
                     self.send_error(404, "Not found")
                     return
-
-                params = parse_qs(parsed.query)
-                previous_image = params.get("previous_image", [None])[0]
-                previous_nickname = params.get("previous_nickname", [None])[0]
-                recent_images = app._parse_recent_images(params.get("recent_images", [None])[0])
-                image_url = app.get_image_url_with_history(recent_images)
-                if image_url is None:
-                    image_url = app.get_image_url(previous_image)
-                nickname = app.get_nickname(previous_nickname)
-                updated_recent_images = app._build_recent_images(recent_images, image_url)
-                self._send_html(app.render_index(image_url, nickname, updated_recent_images))
+                self._handle_request(parse_qs(parsed.query))
 
             def do_POST(self):
                 if self.path != "/":
                     self.send_error(404, "Not found")
                     return
-
                 length = int(self.headers.get("Content-Length", 0))
-                params = parse_qs(self.rfile.read(length).decode("utf-8"))
+                self._handle_request(parse_qs(self.rfile.read(length).decode("utf-8")))
+
+            def _handle_request(self, params: dict):
                 previous_image = params.get("previous_image", [None])[0]
                 previous_nickname = params.get("previous_nickname", [None])[0]
                 recent_images = app._parse_recent_images(params.get("recent_images", [None])[0])
