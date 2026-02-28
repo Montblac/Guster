@@ -1,125 +1,205 @@
-Gus TT Showbiz
-The Vault of Secrets
-Schoonie U-Turn Singleton
-Lavender Gooms
-Longbranch Pennywhistle
-Hummingbird Saltalamacchia
-Jazz Hands
-Blue Ivy Carter
-Black Jack Arnold
-Fellatio Del Toro
-Roadrash
-Bill of Rights
-Black and Tan
-Bags
-Slicks
-Immaculate Conception
-Birdindahand Andabush
-Burton Guster-Rodriguez
-Bruton Gaster
-Burton "Oil Can" Guster
-Methuselah Honeysuckle
-Sh'Dynasty
-Shmuel Cohen
-Hollaback Atcha
-T.T. Showbiz
-Dorian Creech
-Black Magic
-Magic Head
-The Catch
-The Heater
-The Jackal
-The Vault
-Ghee Buttersnaps
-Felicia Fancybottom
-Lodge Blackman
-Adewale Akinnuoye-Agbaje
-Santonio Holmes
-Tan
-Mission Figs
-Hummingbird Saltalamacchia
-Gurton Buster
-Brutal Hustler
-Bursar
-Burton the Billowy Bear
-Burton Gilliam
-Burton Guillermo
-Burton Gumbel
-Burton Gainsborough
-Burton Guster
-Burt
-Bud
-Bubba
-Buttercup
-Tootsie Roll
+# Season 1
+Bud (from The Cosby Show)
 Chocolate Columbo
-Chocolate Einstein
-Chocolate Moses
-Dark Sanders
-Fearless Guster
-G-Force
-Gus Brown
+D'Andre
+Doctor McTock
+Earnest Lambert Watkins
+Felicia Fancybottom
+Francois
 Gus "Sillypants" Jackson
-M.C. Clap Yo Handz
-M.C. Clap Your Handz
+Magic Head
+Mr. Vocabulary
+Peter Panic
+The Jackal
+
+# Season 2
+Big Head Burton
+Bruton "Gasty" Gaster
+Burton "Oil Can" Guster
+Burton the Billowy Bear
+Cowboy Lendo
+Don Cheadle
+Dr. Guster
+Galileo Humpkins
+Gus T.T. Showbiz
+Lavender Gooms
+Nick-Nack
+Ovaltine Jenkins
+Patty Simcox
+Schoonie "U-Turn" Singleton
+Shmuel Cohen
+Tabrickisha Schillington
+Tan
+The G
+
+# Season 3
+Big Baby Burton
+Black Star
+Chesterfield McMillan and Wife
+Dequan "Smallpox" Randolph
+Die Harder
+Ernesto Agapito Garcés con ya de Abelar
+Fearless Guster
+Gussie
+Hollabackatcha
+Homeskillet
+Hummingbird Saltalamacchia
+Lemongrass Gogulope
+Longbranch Pennywhistle
+Methuselah Honeysuckle
+Mr. Tibbs
+Resourceful Gus
+Scrooge Jones
+Slicks
 Squirts MacIntosh
-Squirts McIntosh
-Shawn's Partner
-John Jacob Jingleheimer Schmidt
+Step Anthony Wally Ali
+Sterling Cooper
+Taye Diggs
+Trapezious Milkington
+William Zabka
+
+# Season 4
+Black Magic
+Bob Adams
+Cheswicke
+Clementine Woollysocks
+Detective Miles
+Doughnut Holschtein
+G-Wiz
+Ghee Buttersnaps
+Greg
+Gus Brown
+Guts
+Gustice
+Harry Munroe
+Jazz Hands
+John Slade
+Ol' Ironside
+Old Iron Stomach
+Rich Fingerland
+Ron Davis
+Shawn
+The Heater
+The Vault of Secrets
+Tin Tummy
+
+# Season 5
+Chaz Bono
+Chocolate Einstein
 Control Alt Delete
 Crankshaft
-Homeskillet
-MC Clapyohandz
-Satchel Gizmo
-Stern Bush
+Deon Richmond
+Don Cheadle Jr.
+G-Force
+Gusjay Gupta
+Gurton Buster
+Imhotep or He Cometh in Peace
+John Jacob Jingleheimer Schmidt
+Jonathan Jacob Jingly Smith
+Lodge Blackmunn
+MC Clap Yo Handz
 Mellowrush
-Old Ironside
-Dr. Mc
-G-Whiz
-The Guster
-Gustopher
-Hansel von Spielhaus
-Doctor McTock
-Walker
-Hummingbird Saltalamachia
-Mitchum
-Shabatha Konyak
-Mr. Tibbs
-Scoony "U-Turn" Singleton
-Bruton St. Germain
-Satchel Gizmo
-Q. T. McWhiskers
-Moses "Seaweed" Gunn
-Mrs. Whittlebury
-Django Unchained
-Joon
-M.C. Clapyourhands
-M.C. ClapYoHands
-M.C. Clap Yo Hands
-M.C. Clap Yo Handz
-Ghee Buttersnaps a.k.a. The Heater
-A Player Named Gus
-Jonathan Jacob Jingleheimer Schmidt
-Hummingbird "Saltalamachia" Guster
-Gus "The Catch" T.T. Showbiz
-Imhotep or "He Cometh in Peace"
-Sh'Dynasty (God's Comma)
-M.C. Clap Yo Hands, No Z
-Ghee Buttersnaps, The American Dream
-Schoonie "U-Turn" Singleton
-Tan, from Black and Tan
-Black from Black and Tan
-Bruton's Butterscotch
+Miss Whittlebury
+Mission Figgs
+Original G-String
+Crowd Pleasah
+RadioStar
+Road Rash
+Santonio Holmes
+Sher-Black-Lock
+Yasmine Bleeth
+
+# Season 6
+Blacula
+Benedict Arnold Jackson
+Brutal Hustler
+Candyman
 Count Chocula
-Talmadge McGulager
+Eddie Adams from Torrance
+Fellatio Del Toro
+Ingle Woods
+Larenz Tate
+Sh'Dynasty
+Suggs
+Tap-Man
+Watson Williams
+
+# Season 7
+A Playa Named Gus
+Bad News Marvin Barnes
+Bill Ofrights
+Blue Ivy Carter
+Burton Trout
+Darryl
+Django Unchained
+Domo Arigato
+Flapjack Palmdale
+Gigi Van Trarn
+Gurn Blandsten
+Immaculate Conception
+Jonas Gustavsson
+King Mongkut
+Lil' Wayne
+Nutella
+Pootie Tang
+Satchel Gizmo
+Vijay Armitraj
+
+# Season 8
+Angela Bennett
+Bilbo
+Billy Elliott
+Burton Guster Black Spencer
+Chandler
+Data
+Denzel Diggs Underwood Morris Chestnut Washington
+Dr. Alan Champion
+Dr. Dolittle
+Dr. Evil
+Dr. Horrible
+Dr. Jekyll
+Dr. Phibes
+Dr. T
+Edward Scissorhands
+Elaine
+Ferris Bueller
+Frodo
+Gandalf
+George
+Han-Na Montana
+Hans Landa
+Hans Solo
+Jack Bauer
+Jack Devlin
+Jason Bourne
+Jerry
+Joey
+Kirk
+Kramer
+Magic Head
+Morpheus
+Mr. Bee
+Mr. Blonde
+Mr. Brown
+Mr. Deeds
+Mr. Pink
+Mr. Popper
+Mr. Ripley
+Mr. T
+Mr. White
+My Black Cameron
+Neo
+Picard
+Robert "Booooooooooob" Jones
+Ross
+Simba
+Spock
+Tony Stark
 Trending on Twitter
-Benedict Cumberbatch
-Calvin "CJ" Jones
-Burton "The Society Slayer" Guster
-A Really Good Listener
-Sassy Quach
-Commander Burton Trout
-Imhotep the Notorious
-The Black Stallion
-Chocolate Thunder
-Proud Mary
+Trinity
+Zazu
+
+# Psych movies
+Birdindahand Andabush
+Black Jack Arnold
+Burton Guster-Rodriguez
