@@ -1,28 +1,66 @@
 {
     "version": "0.2.0",
-    "compounds": [
-        {
-            "name": "Run app + Edge",
-            "configurations": [
-                "Python: Run main.py",
-                "Launch Edge (Guster)"
-            ],
-            "stopAll": true
-        }
-    ],
     "configurations": [
         {
-            "name": "Python: Run main.py",
+            "name": "Run app (default browser)",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/main.py",
+            "python": "${command:python.interpreterPath}",
+            "module": "guster",
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}",
-            "justMyCode": true
+            "justMyCode": true,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "Serving on (http://\\S+)"
+            }
         },
         {
-            "name": "Launch Edge (Guster)",
-            "type": "msedge",
+            "name": "Run app + Chrome",
+            "type": "debugpy",
+            "request": "launch",
+            "python": "${command:python.interpreterPath}",
+            "module": "guster",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "justMyCode": true,
+            "serverReadyAction": {
+                "action": "debugWithChrome",
+                "pattern": "Serving on (http://\\S+)"
+            }
+        },
+        {
+            "name": "Run app + Edge",
+            "type": "debugpy",
+            "request": "launch",
+            "python": "${command:python.interpreterPath}",
+            "module": "guster",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "justMyCode": true,
+            "serverReadyAction": {
+                "action": "debugWithEdge",
+                "pattern": "Serving on (http://\\S+)"
+            }
+        },
+        {
+            "name": "Run app + Firefox",
+            "type": "debugpy",
+            "request": "launch",
+            "python": "${command:python.interpreterPath}",
+            "module": "guster",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "justMyCode": true,
+            "serverReadyAction": {
+                "action": "startDebugging",
+                "name": "Attach Firefox (Guster)",
+                "pattern": "Serving on (http://\\S+)"
+            }
+        },
+        {
+            "name": "Attach Firefox (Guster)",
+            "type": "firefox",
             "request": "launch",
             "url": "http://localhost:5000",
             "webRoot": "${workspaceFolder}"
